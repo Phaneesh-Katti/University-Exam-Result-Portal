@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+    <title>Result Verification</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #3e8e41;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .save-form input[type=number] {
+            margin-right: 10px;
+            width: 80px;
+        }
+
+        .save-form button[type=submit],
+        .review-form button[type=submit] {
+            background-color: #008CBA;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 14px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #3e8e41;
+            transform: scale(1.1);
+        }
+        #verify-btn:disabled:hover {
+            transform: none;
+        }
+    </style>
+    <script>
+        // function verifyAndUpload() {
+        //     // Disable the button
+        //     document.getElementById("verify-btn").disabled = true;
+        //     // Change the text
+        //     document.getElementById("verify-btn").textContent = "Verified and Uploaded";
+        //     // Make a POST request to the server
+        //     fetch("/CoeVerification", {method: "POST"})
+        //         .then(response => {
+        //             // handle the response if needed
+        //         })
+        //         .catch(error => {
+        //             console.error(error);
+        //         });
+        // }
+        function verifyAndUpload() {
+            // Disable the button
+            const btn = document.getElementById("verify-btn");
+            btn.disabled = true;
+            // Change the text
+            btn.textContent = "Verified and Uploaded";
+            // Make a POST request to the server
+            fetch("/CoeVerification", {method: "POST"})
+                .then(response => {
+                    // handle the response if needed
+                    // Change the button to non-clickable text
+                    btn.style.backgroundColor = "#ccc";
+                    btn.style.boxShadow = "none";
+                    btn.style.cursor = "default";
+                    btn.removeAttribute("onclick");
+                    btn.disabled = true; // add this line to disable the button
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        }
+
+    </script>
+</head>
+<body>
+<h1 style="display: inline-block; text-align: center; width: 100%;">Verification Scripts</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th title="Student Registration Number">SRN</th>
+        <th title="Student Name">Name</th>
+        <th title="Exam Session">Date</th>
+        <th title="Grade obtained by the student">Grade</th>
+    </tr>
+
+    </thead>
+    <tbody>
+    <tr th:each="result : ${results}">
+        <td th:text="${result.getSrn()}"></td>
+        <td th:text="${result.getName()}"></td>
+        <td th:text="${#dates.format(result.getDate(),'dd/MM/yyyy')}"></td>
+        <td th:text="${result.getGrade()}"></td>
+    </tr>
+    </tbody>
+</table>
+    <div style="text-align:center;">
+        <button id="verify-btn" class="button" onclick="verifyAndUpload()" style="padding: 10px 30px; font-size: 18px; border-radius: 10px; background-color: #3e8e41; color: rgb(255,255,255); box-shadow: 0px 3px 3px rgba(157,9,9,0.25); transition: all 0.3s ease-in-out;">
+            Verify and Upload
+        </button>
+    </div>
+<!--    <div style="text-align:center;">-->
+<!--&lt;!&ndash;                <button type="button" onclick="location.href='/CoeVerification';">Verify and Upload</button>&ndash;&gt;-->
+<!--        <button id="verify-btn" class="btn btn-primary" onclick="verifyAndUpload()">Verify and Upload</button>-->
+<!--    </div>-->
+</body>
+</html>

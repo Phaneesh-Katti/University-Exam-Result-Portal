@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pending Revaluation Requests</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 36px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        table {
+            border-collapse: collapse;
+            margin: 0 auto;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #3e8e41;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        form {
+            display: inline-block;
+        }
+
+        button {
+            /*background-color: #3e8e41;*/
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            padding: 10px;
+            text-transform: uppercase;
+        }
+        .accept {
+            background-color: #4CAF50;
+        }
+        .reject {
+            background-color: #f44336;
+        }
+        button:hover {
+            background-color: #2c6738;
+        }
+
+        input[type="hidden"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<h1>Pending Revaluation Requests</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Script ID</th>
+        <th>Script Name</th>
+        <th>Author</th>
+        <th>Exam Session</th>
+        <th>Revaluation Status</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="script : ${scripts}">
+        <td th:text="${script.id}"></td>
+        <td th:text="${script.name}"></td>
+        <td th:text="${script.srn}"></td>
+        <td th:text="${script.date}"></td>
+        <td th:text="${script.revalRequested}"></td>
+        <td>
+            <form th:action="@{/revalRequests/accept}" method="post">
+                <input type="hidden" name="id" th:value="${script.id}">
+                <button type="submit" name="action" value="processing" class="accept">Accept</button>
+            </form>
+            <form th:action="@{/revalRequests/reject}" method="post">
+                <input type="hidden" name="id" th:value="${script.id}">
+                <button type="submit" name="action" value="reject" class="reject">Reject</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+  <title>Apply for Review</title>
+  <style>
+    label {
+      display: inline-block;
+      width: 100px;
+      margin-bottom: 10px;
+    }
+    input[type=text] {
+      width: 300px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    button[type=submit] {
+      background-color: #008CBA;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<h1>Apply for Review</h1>
+<form method="post" action="/apply-for-review">
+  <input type="hidden" name="scriptId" th:value="${script.getId()}">
+  <label>SRN:</label>
+  <input type="text" name="srn" th:value="${script.getSrn()}" readonly><br>
+  <label>Name:</label>
+  <input type="text" name="name" th:value="${script.getName()}" readonly><br>
+  <label>Date:</label>
+  <input type="text" name="date" th:value="${#dates.format(script.getDate(),'dd/MM/yyyy')}" readonly><br>
+  <label>Marks:</label>
+  <input type="text" name="marks" th:value="${script.getMarks()}" readonly><br>
+  <label>Grade:</label>
+  <input type="text" name="grade" th:value="${script.getGrade()}" readonly><br>
+  <button type="submit">Confirm</button>
+</form>
+</body>
+</html>

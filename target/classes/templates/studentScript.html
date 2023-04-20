@@ -1,0 +1,401 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org" lang="en">-->
+
+<!--<head>-->
+<!--  <title>Scripts</title>-->
+<!--  <style>-->
+<!--    table {-->
+<!--      border-collapse: collapse;-->
+<!--      width: 100%;-->
+<!--    }-->
+
+<!--    th,-->
+<!--    td {-->
+<!--      text-align: left;-->
+<!--      padding: 8px;-->
+<!--      border-bottom: 1px solid #ddd;-->
+<!--    }-->
+
+<!--    th {-->
+<!--      background-color: #4CAF50;-->
+<!--      color: white;-->
+<!--    }-->
+
+<!--    tr:hover {-->
+<!--      background-color: #f5f5f5;-->
+<!--    }-->
+
+<!--    .save-form {-->
+<!--      display: flex;-->
+<!--      align-items: center;-->
+<!--    }-->
+
+<!--    .save-form input[type=number] {-->
+<!--      margin-right: 10px;-->
+<!--      width: 80px;-->
+<!--    }-->
+
+<!--    .save-form button[type=submit],-->
+<!--    .review-form button[type=submit] {-->
+<!--      background-color: #008CBA;-->
+<!--      color: white;-->
+<!--      border: none;-->
+<!--      padding: 8px 16px;-->
+<!--      text-align: center;-->
+<!--      text-decoration: none;-->
+<!--      display: inline-block;-->
+<!--      font-size: 14px;-->
+<!--      border-radius: 4px;-->
+<!--      cursor: pointer;-->
+<!--    }-->
+
+<!--    .review-requested {-->
+<!--      color: green;-->
+<!--      font-weight: bold;-->
+<!--    }-->
+<!--    .reval-requested {-->
+<!--      color: green;-->
+<!--      font-weight: bold;-->
+<!--    }-->
+
+<!--    .review-requested:before {-->
+<!--      content: "Review Requested - ";-->
+<!--    }-->
+<!--    .processing-row {-->
+<!--      background-color: #ffe6e6;-->
+<!--    }-->
+<!--    td.not-examined {-->
+<!--      position: relative;-->
+<!--    }-->
+
+<!--    td.not-examined::after {-->
+<!--      content: "Not examined";-->
+<!--      position: absolute;-->
+<!--      top: -1.5em;-->
+<!--      left: 50%;-->
+<!--      transform: translateX(-50%);-->
+<!--      white-space: nowrap;-->
+<!--      font-size: 0.8em;-->
+<!--      background-color: black;-->
+<!--      color: white;-->
+<!--      padding: 0.25em;-->
+<!--      border-radius: 0.25em;-->
+<!--      visibility: hidden;-->
+<!--      opacity: 0;-->
+<!--      transition: visibility 0s, opacity 0.5s linear;-->
+<!--    }-->
+
+<!--    td.not-examined:hover::after {-->
+<!--      visibility: visible;-->
+<!--      opacity: 1;-->
+<!--    }-->
+
+<!--  </style>-->
+
+<!--  <script>-->
+<!--    function applyForReview(button) {-->
+<!--      button.disabled = true;-->
+<!--      button.textContent = "Review Requested";-->
+<!--      button.classList.add("review-requested");-->
+<!--    }-->
+<!--    function hideTable() {-->
+<!--      setTimeout(function() {-->
+<!--        document.getElementById("toHide").style.display = "none";-->
+<!--      }, 10000); // 60,000 milliseconds = 1 minute-->
+<!--    }-->
+<!--  </script>-->
+<!--</head>-->
+<!--<body>-->
+<!--<h1>Scripts</h1>-->
+<!--<table th:id="scriptTable">-->
+<!--  <thead>-->
+<!--  <tr>-->
+<!--    <th title="Student Registration Number">SRN</th>-->
+<!--    <th title="Student Name">Name</th>-->
+<!--    <th title="Date of Exam">Date</th>-->
+<!--    <th title="Grade obtained by the student">Grade</th>-->
+<!--    <th title="NOTE: Will be shown on Accepted Reviews ONLY">Marks</th>-->
+<!--    <th title="NOTE: Will be shown on Accepted Reviews ONLY">Image</th>-->
+<!--    <th title="Review status of the answer script">Review</th>-->
+<!--    <th title="Revaluation status of the answer script">Revaluation</th>-->
+<!--  </tr>-->
+
+<!--  </thead>-->
+<!--  <tbody>-->
+<!--  <tr th:each="script : ${scripts}" th:class="${script.getRevalRequested() == 'Processing'} ? 'processing-row' : ''">-->
+<!--    <td th:text="${script.getSrn()}"></td>-->
+<!--    <td th:text="${script.getName()}"></td>-->
+<!--    <td th:text="${#dates.format(script.getDate(),'dd/MM/yyyy')}"></td>-->
+
+<!--    <td th:text="${script.getGrade()}"></td>-->
+<!--    <td>-->
+<!--      <div th:if="${script.getReviewRequested() == 'Accepted'}" >-->
+<!--        <div th:class="${script.getMarks() == null ? 'not-examined' : ''}" th:text="${script.getMarks() == null ? '~' : script.getMarks()}"></div>-->
+<!--      </div>-->
+<!--    </td>-->
+
+<!--    &lt;!&ndash;Show Image only if review request was accepted by COE&ndash;&gt;-->
+<!--    <td>-->
+<!--      <div th:if="${script.getReviewRequested() == 'Accepted'}">-->
+<!--        <div th:text="${script.getImage()}"></div>-->
+<!--      </div>-->
+<!--    </td>-->
+
+<!--    &lt;!&ndash;Review column - button or text    &ndash;&gt;-->
+<!--    <td>-->
+<!--      <div th:if="${script.getMarks() == null}">-->
+<!--        ~-->
+<!--      </div>-->
+<!--      <div th:if="${script.getReviewRequested() == null and script.getMarks() != null}">-->
+
+<!--        <form method="post" th:action="@{/reviewRequestConfirmation}">-->
+<!--          <input type="hidden" th:name="srn" th:value="${script.getSrn()}" />-->
+<!--          <input type="hidden" th:name="id" th:value="${script.getId()}" />-->
+<!--          <button type="submit" name="action" value="pending">Apply for Review</button>-->
+<!--        </form>-->
+<!--      </div>-->
+<!--      <div th:if="${script.getReviewRequested() == 'Pending'}" class="review-requested">-->
+<!--        Review Requested-->
+<!--      </div>-->
+<!--      <div th:if="${script.getReviewRequested() == 'Rejected'}" style="color:red; font-weight: bold" title="Contact COE for further details">-->
+<!--        Rejected-->
+<!--      </div>-->
+<!--      <div th:if="${script.getReviewRequested() == 'Accepted'}" style="color: #3e8e41; font-weight: bold">-->
+<!--        Accepted-->
+<!--      </div>-->
+<!--    </td>-->
+
+<!--    &lt;!&ndash;Reval column - button or text    &ndash;&gt;-->
+<!--    <td>-->
+<!--      <div th:if="${script.getMarks() == null}">-->
+<!--        ~-->
+<!--      </div>-->
+<!--      <div th:if="${script.getRevalRequested() == null and script.getMarks() != null}">-->
+<!--        <form method="post" th:action="@{/revalRequestConfirmation}">-->
+<!--          <input type="hidden" th:name="srn" th:value="${script.getSrn()}" />-->
+<!--          <input type="hidden" th:name="id" th:value="${script.getId()}" />-->
+<!--          <button type="submit" name="action" value="pending">Apply for Revaluation</button>-->
+<!--        </form>-->
+<!--      </div>-->
+<!--      <div th:if="${script.getRevalRequested() == 'Pending'}" class="reval-requested">-->
+<!--        Revaluation Requested-->
+<!--      </div>-->
+<!--      <div th:if="${script.getRevalRequested() == 'Rejected'}" style="color:red; font-weight: bold" title="Contact COE for further details">-->
+<!--        Rejected-->
+<!--      </div>-->
+<!--      <div th:if="${script.getRevalRequested() == 'Processing'}" style="color: #3e8e41; font-weight: bold">-->
+<!--        Revaluation In Progress-->
+<!--      </div>-->
+<!--      <div th:if="${script.getRevalRequested() == 'Processed'}" style="color: #3e8e41; font-weight: bold">-->
+<!--        Revaluation Complete! - No Marks Change-->
+<!--      </div>-->
+<!--      <div th:if="${script.getRevalRequested() == 'Processed+'}" style="color: #3e8e41; font-weight: bold">-->
+<!--        Revaluation Complete! - Marks Changed-->
+<!--      </div>-->
+<!--    </td>-->
+<!--  </tr>-->
+<!--  </tbody>-->
+<!--</table>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+
+<head>
+  <title>Scripts</title>
+  <style>
+    h1 {
+      text-align: center;
+      color: #86079a;
+
+    }
+    table {
+      color : #b7b5b5;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      color : #000000;
+      text-align: center;
+      padding: 8px;
+      border-bottom: 1px solid #ffffff;
+    }
+
+    th {
+      background-color: #c013da;
+      color: #ffffff;
+    }
+
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+
+    .save-form {
+      display: flex;
+      align-items: center;
+    }
+
+    .save-form input[type=number] {
+      margin-right: 10px;
+      width: 80px;
+    }
+
+    .save-form button[type=submit],
+    .review-form button[type=submit] {
+      background-color: #1c9854;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .review-requested {
+      color: green;
+      font-weight: bold;
+    }
+    .reval-requested {
+      color: green;
+      font-weight: bold;
+    }
+
+    .review-requested:before {
+      content: "Review Requested - ";
+    }
+    .processing-row {
+      background-color: #ffe6e6;
+    }
+    td.not-examined {
+      position: relative;
+    }
+
+    td.not-examined::after {
+      content: "Not examined";
+      position: absolute;
+      top: -1.5em;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      font-size: 0.8em;
+      background-color: #cfda2f;
+      color: white;
+      padding: 0.25em;
+      border-radius: 0.25em;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0s, opacity 0.5s linear;
+    }
+
+    td.not-examined:hover::after {
+      visibility: visible;
+      opacity: 1;
+    }
+
+  </style>
+
+  <script>
+    function applyForReview(button) {
+      button.disabled = true;
+      button.textContent = "Review Requested";
+      button.classList.add("review-requested");
+    }
+  </script>
+</head>
+<body>
+<h1>Student Result</h1>
+<table>
+  <thead>
+  <tr>
+    <th title="Student Registration Number">SRN</th>
+    <th title="Student Name">Name</th>
+    <th title="Date of Exam">Exam Session</th>
+    <th title="Grade obtained by the student">Grade</th>
+    <th title="NOTE: Will be shown on Accepted Reviews ONLY">Marks</th>
+    <th title="NOTE: Will be shown on Accepted Reviews ONLY">Image</th>
+    <th title="Review status of the answer script">Review</th>
+    <th title="Revaluation status of the answer script">Revaluation</th>
+  </tr>
+
+  </thead>
+  <tbody>
+  <tr th:each="script : ${scripts}" th:class="${script.getRevalRequested() == 'Processing'} ? 'processing-row' : ''">
+    <td th:text="${script.getSrn()}"></td>
+    <td th:text="${script.getName()}"></td>
+    <td th:text="${#dates.format(script.getDate(),'dd/MM/yyyy')}"></td>
+
+    <td th:text="${script.getGrade()}"></td>
+
+    <!--Show marks only if review request was accepted by COE-->
+    <!--    <td>-->
+    <!--      <div th:if="${script.getReviewRequested() == 'Accepted'}">-->
+    <!--        <div th:text="${script.getMarks()}"></div>-->
+    <!--      </div>-->
+    <!--    </td>-->
+    <td>
+      <div th:if="${script.getReviewRequested() == 'Accepted'}">
+        <div th:class="${script.getMarks() == null ? 'not-examined' : ''}" th:text="${script.getMarks() == null ? '~' : script.getMarks()}"></div>
+      </div>
+    </td>
+
+    <!--Show Image only if review request was accepted by COE-->
+    <td>
+      <div th:if="${script.getReviewRequested() == 'Accepted'}">
+        <div th:text="${script.getImage()}"></div>
+      </div>
+    </td>
+
+    <!--Review column - button or text    -->
+    <td>
+      <div th:if="${script.getReviewRequested() == null and script.getMarks()!=null}">
+        <form method="post" th:action="@{/reviewRequestConfirmation}">
+          <input type="hidden" th:name="srn" th:value="${script.getSrn()}" />
+          <input type="hidden" th:name="id" th:value="${script.getId()}" />
+          <button type="submit" name="action" value="pending">Apply for Review</button>
+        </form>
+      </div>
+      <div th:if="${script.getReviewRequested() == 'Pending'}" class="review-requested">
+        Review Requested
+      </div>
+      <div th:if="${script.getReviewRequested() == 'Rejected'}" style="color:red; font-weight: bold" title="Contact COE for further details">
+        Rejected
+      </div>
+      <div th:if="${script.getReviewRequested() == 'Accepted'}" style="color: #3e8e41; font-weight: bold">
+        Accepted
+      </div>
+    </td>
+
+    <!--Reval column - button or text    -->
+    <td>
+      <div th:if="${script.getRevalRequested() == null and script.getMarks()!=null}">
+        <form method="post" th:action="@{/revalRequestConfirmation}">
+          <input type="hidden" th:name="srn" th:value="${script.getSrn()}" />
+          <input type="hidden" th:name="id" th:value="${script.getId()}" />
+          <button type="submit" name="action" value="pending">Apply for Revaluation</button>
+        </form>
+      </div>
+      <div th:if="${script.getRevalRequested() == 'Pending'}" class="reval-requested">
+        Revaluation Requested
+      </div>
+      <div th:if="${script.getRevalRequested() == 'Rejected'}" style="color:red; font-weight: bold" title="Contact COE for further details">
+        Rejected
+      </div>
+      <div th:if="${script.getRevalRequested() == 'Processing'}" style="color: #3e8e41; font-weight: bold">
+        Revaluation In Progress
+      </div>
+
+      <div th:if="${script.getRevalRequested() == 'Processed+'}" style="color: #3e8e41; font-weight: bold">
+        Revaluation Complete! - Marks Changed
+      </div>
+    </td>
+  </tr>
+  </tbody>
+</table>
+</body>
+</html>
